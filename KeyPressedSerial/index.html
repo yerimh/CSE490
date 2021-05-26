@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Web Serial Demo</title>
+  <script src="https://cdn.jsdelivr.net/gh/makeabilitylab/p5js/_libraries/serial.js"></script>
+</head>
+
+<body>
+  <div id="main-content">
+    <button id="connect-button" onclick="onButtonConnectToSerialDevice()">
+      Connect via Serial Port
+    </button>
+    <div id="text-interface">
+      <h3>Press any key!</h3>
+
+      <h3>Display text:</h3>
+      <p id="output-text"></p>
+
+      <h3>Received from Arduino:</h3>
+      <p id="received-text"></p>
+    </div>
+  </div>
+
+  <script>
+    const serial = new Serial();
+    const inputText = document.querySelector('input');
+    const outputText = document.getElementById('output-text');
+    const rcvdText = document.getElementById('received-text');
+
+    serial.on(SerialEvents.CONNECTION_OPENED, onSerialConnectionOpened);
+    serial.on(SerialEvents.CONNECTION_CLOSED, onSerialConnectionClosed);
+    serial.on(SerialEvents.DATA_RECEIVED, onSerialDataReceived);
+    serial.on(SerialEvents.ERROR_OCCURRED, onSerialErrorOccurred);
+
+    document.addEventListener('keydown', (e) => {
+      outputText.textContent = e.key;
+      serialWriteTextData(e.key);
+    });
+
+    async function onButtonConnectToSerialDevice() {
+      console.log("onButtonConnectToSerialDevice");
+      if (!serial.isOpen()) {
+        await serial.connectAndOpen();
+      }
+    }
+
+    async function serialWriteTextData(textData) {
+      if (serial.isOpen()) {
+        console.log("Writing to serial: ", textData);
+        serial.writeLine(textData);
+      }
+    }
+
+    function onSerialErrorOccurred(eventSender, error) {
+      console.log("onSerialErrorOccurred", error);
+    }
+
+    function onSerialConnectionOpened(eventSender) {
+      console.log("onSerialConnectionOpened", eventSender);
+    }
+
+    function onSerialConnectionClosed(eventSender) {
+      console.log("onSerialConnectionClosed", eventSender);
+    }
+
+    function onSerialDataReceived(eventSender, newData) {
+      console.log("onSerialDataReceived", newData);
+      rcvdText.textContent = newData;
+    }
+
+    async function onConnectButtonClick() {
+      console.log("Connect button clicked!");
+    }
+  </script>
+</body>
+</html>
