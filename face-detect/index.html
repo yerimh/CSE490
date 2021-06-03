@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Face Expression Recognition</title>
+    <script src="https://cdn.jsdelivr.net/gh/makeabilitylab/p5js/_libraries/serial.js"></script>
+    <script defer src="node_modules/face-api.js/dist/face-api.min.js"></script>
+    <script defer src="script.js"></script>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      canvas {
+        position: absolute;
+      }
+    </style>
+  </head>
+
+<body>
+  <div id="main-content">
+    <button id="connect-button" onclick="onButtonConnectToSerialDevice()">
+      Connect via Serial Port
+    </button>
+    <div id="text-interface">
+      <h3>Display text:</h3>
+      <p id="output-text"></p>
+
+      <h3>Received from Arduino:</h3>
+      <p id="received-text"></p>
+    </div>
+  </div>
+
+  <br />
+
+  <h2 id="facial-expression"></h2>
+  <video id="video" width="720" height="560" autoplay muted></video>
+
+</body>
+</html>
