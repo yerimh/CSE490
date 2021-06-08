@@ -10,26 +10,17 @@ const int DELAY_MS = 5;
 #define OLED_RESET 4
 Adafruit_SSD1306 _display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-const int OUTPUT_PIN = LED_BUILTIN;
+const int OUTPUT_PIN = 2;
+const int LED_OUTPUT_PIN = 10;
+const int BUTTON = 4;
 
 enum GameState {
   MENU,
   FACES
 };
 
-enum FaceState {
-  NEUTRAL,
-  HAPPY,
-  SAD,
-  SURPRISED,
-  FEARFUL,
-  ANGRY,
-  DISGUSTED
-};
-
 enum GameState _curGameState = MENU;
-enum FaceState _curFaceState = random(7);
-String _curFaceStateString = "";
+String _curFaceState = "neutral";
 
 // 'happy', 128x64px
 const unsigned char happyBitmap [] PROGMEM = {
@@ -501,18 +492,17 @@ const unsigned char fearfulBitmap [] PROGMEM = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
-unsigned long time;
-
 void setup() {
   Serial.begin(9600);
+
   pinMode(OUTPUT_PIN, OUTPUT);
+  pinMode(LED_OUTPUT_PIN, OUTPUT);
+  pinMode(BUTTON, INPUT_PULLUP);
 
   if (!_display.begin(SSD1306_SWITCHCAPVCC, 0X3D)) {
     Serial.println(F("SSD1306 allocation failed"));
     for(;;);
   }
-
-  time = millis();
 
   _display.clearDisplay();
   _display.setTextSize(1);
@@ -527,60 +517,25 @@ void loop() {
   if (Serial.available() > 0) {
     String rcvdSerialData = Serial.readStringUntil('\n');
 
-    switch (_curFaceState) {
-      case 0:
-        _curFaceStateString = "neutral";
-        break;
-      case 1:
-        _curFaceStateString = "happy";
-        break;
-      case 2:
-        _curFaceStateString = "sad";
-        break;
-      case 3:
-        _curFaceStateString = "surprised";
-        break;
-      case 4:
-        _curFaceStateString = "fearful";
-        break;
-      case 5:
-        _curFaceStateString = "angry";
-        break;
-      case 6:
-        _curFaceStateString = "disgusted";
-        break;
+    int buttonVal = digitalRead(BUTTON);
+    if (buttonVal == LOW) {
+      Serial.println(_curFaceState);
+    } else {
+      Serial.println("");
     }
-    if (rcvdSerialData.equalsIgnoreCase(_curFaceStateString)) {
-      int randomFaceNum = random(7);
     
-      switch (randomFaceNum) {
-        case 0:
-          _curFaceState = NEUTRAL;
-          break;
-        case 1:
-          _curFaceState = HAPPY;
-          break;
-        case 2:
-          _curFaceState = SAD;
-          break;
-        case 3:
-          _curFaceState = SURPRISED;
-          break;
-        case 4:
-          _curFaceState = FEARFUL;
-          break;
-        case 5:
-          _curFaceState = ANGRY;
-          break;
-        case 6:
-          _curFaceState = DISGUSTED;
-          break;
-      }
+    int randomFaceNum;
+    if (rcvdSerialData.equalsIgnoreCase(_curFaceState)) {
+      randomFaceNum = random(7);
+      digitalWrite(LED_OUTPUT_PIN, HIGH);
+      delay(200);
+      digitalWrite(LED_OUTPUT_PIN, LOW);
+      delay(200);
+      digitalWrite(LED_OUTPUT_PIN, HIGH);
+      delay(200);
+      digitalWrite(LED_OUTPUT_PIN, LOW);
+      delay(200);
     }
-
-    int ledValue = rcvdSerialData.toInt();
-    ledValue = constrain(ledValue, 0, 255);
-    analogWrite(OUTPUT_PIN, ledValue);
 
     _display.clearDisplay();
     int16_t x1, y1;
@@ -604,29 +559,40 @@ void loop() {
 //      _display.print(rcvdSerialData);
     }
 
-    switch (_curFaceState) {
+    switch (randomFaceNum) {
       case 0:
+        _curFaceState = "neutral";
         _display.drawBitmap(0, 0, neutralBitmap, 126, 64, WHITE);
         break;
       case 1:
+        _curFaceState = "happy";
         _display.drawBitmap(0, 0, happyBitmap, 126, 64, WHITE);
         break;
       case 2:
+        _curFaceState = "sad";
         _display.drawBitmap(0, 0, sadBitmap, 126, 64, WHITE);
         break;
       case 3:
+        _curFaceState = "surprised";
         _display.drawBitmap(0, 0, surprisedBitmap, 126, 64, WHITE);
         break;
       case 4:
+        _curFaceState = "fearful";
         _display.drawBitmap(0, 0, fearfulBitmap, 126, 64, WHITE);
         break;
       case 5:
+        _curFaceState = "angry";
         _display.drawBitmap(0, 0, angryBitmap, 126, 64, WHITE);
         break;
       case 6:
+        _curFaceState = "disgusted";
         _display.drawBitmap(0, 0, disgustedBitmap, 126, 64, WHITE);
         break;
     }
+
+    int ledValue = rcvdSerialData.toInt();
+    ledValue = constrain(ledValue, 0, 255);
+    analogWrite(OUTPUT_PIN, ledValue);
 
     _display.display();
 
