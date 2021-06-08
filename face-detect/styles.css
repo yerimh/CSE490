@@ -7,3 +7,8 @@ body {
   flex-direction: column;
   align-items: center;
 }
+
+canvas {
+  position: absolute;
+  z-index: 1;
+}

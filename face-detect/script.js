@@ -30,7 +30,8 @@ video.addEventListener('play', () => {
   document.body.append(canvas)
   const displaySize = { width: video.width, height: video.height }
   faceapi.matchDimensions(canvas, displaySize)
-  let before, after;
+  let before0, after0, before1, after1;
+  let exp0, exp1;
   setInterval(async() => {
     const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions()
     const resizedDetections = faceapi.resizeResults(detections, displaySize)
@@ -39,13 +40,34 @@ video.addEventListener('play', () => {
     faceapi.draw.drawFaceLandmarks(canvas, resizedDetections)
     faceapi.draw.drawFaceExpressions(canvas, resizedDetections)
 
-    let exps = detections[0].expressions;
-    after = Object.keys(exps).reduce((a, b) => exps[a] > exps[b] ? a : b);
-    console.log(after);
-    if (after != before) {
-      serialWriteTextData(after);
+    if (detections) {
+      if (detections.length > 0) {
+        exp0 = detections[0].expressions;
+        after0 = Object.keys(exp0).reduce((a, b) => exp0[a] > exp0[b] ? a : b);
+        if (after0 != before0) {
+          serialWriteTextData(after0);
+        }
+        before0 = after0;
+      }
+      if (detections.length > 1) {
+        exp1 = detections[1].expressions;
+        after1 = Object.keys(exp1).reduce((a, b) => exp1[a] > exp1[b] ? a : b);
+        if (after1 != before1) {
+          serialWriteTextData(after1);
+        }
+        before1 = after1;
+      }
+
+      // if (after0 != before0 && rcvdText.innerText == after0) {
+      //   serialWriteTextData(after0);
+      //   console.log("0 won");
+      // } else if (after1 != before1 && rcvdText.innerText == after1) {
+      //   serialWriteTextData(after1);
+      //   console.log("1 won");
+      // }
+      // before0 = after0;
+      // before1 = after1;
     }
-    before = after;
   }, 100)
 })
 
@@ -58,7 +80,7 @@ async function onButtonConnectToSerialDevice() {
 
 async function serialWriteTextData(textData) {
   if (serial.isOpen()) {
-    console.log("Writing to serial: ", textData);
+    // console.log("Writing to serial: ", textData);
     serial.writeLine(textData);
   }
 }
