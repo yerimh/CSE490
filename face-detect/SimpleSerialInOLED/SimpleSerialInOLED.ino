@@ -11,8 +11,11 @@ const int DELAY_MS = 5;
 Adafruit_SSD1306 _display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 const int OUTPUT_PIN = 2;
-const int LED_OUTPUT_PIN = 10;
+const int LEFT_LED_OUTPUT_PIN = 10;
+const int RIGHT_LED_OUTPUT_PIN = 11;
 const int BUTTON = 4;
+int buttonState = 1;
+int lastButtonState = 1;
 
 enum GameState {
   MENU,
@@ -496,7 +499,8 @@ void setup() {
   Serial.begin(9600);
 
   pinMode(OUTPUT_PIN, OUTPUT);
-  pinMode(LED_OUTPUT_PIN, OUTPUT);
+  pinMode(LEFT_LED_OUTPUT_PIN, OUTPUT);
+  pinMode(RIGHT_LED_OUTPUT_PIN, OUTPUT);
   pinMode(BUTTON, INPUT_PULLUP);
 
   if (!_display.begin(SSD1306_SWITCHCAPVCC, 0X3D)) {
@@ -518,22 +522,33 @@ void loop() {
     String rcvdSerialData = Serial.readStringUntil('\n');
 
     int buttonVal = digitalRead(BUTTON);
-    if (buttonVal == LOW) {
-      Serial.println(_curFaceState);
-    } else {
-      Serial.println("");
-    }
-    
+
+    // send "_curFaceState,buttonVal"
+    Serial.print(_curFaceState);
+    Serial.print(",");
+    Serial.println(buttonVal);
+
+    // light up LED and choose a new random face
     int randomFaceNum;
-    if (rcvdSerialData.equalsIgnoreCase(_curFaceState)) {
+    if (rcvdSerialData.equalsIgnoreCase("left") || rcvdSerialData.equalsIgnoreCase("correct")) {
       randomFaceNum = random(7);
-      digitalWrite(LED_OUTPUT_PIN, HIGH);
+      digitalWrite(LEFT_LED_OUTPUT_PIN, HIGH);
       delay(200);
-      digitalWrite(LED_OUTPUT_PIN, LOW);
+      digitalWrite(LEFT_LED_OUTPUT_PIN, LOW);
       delay(200);
-      digitalWrite(LED_OUTPUT_PIN, HIGH);
+      digitalWrite(LEFT_LED_OUTPUT_PIN, HIGH);
       delay(200);
-      digitalWrite(LED_OUTPUT_PIN, LOW);
+      digitalWrite(LEFT_LED_OUTPUT_PIN, LOW);
+      delay(200);
+    } else if (rcvdSerialData.equalsIgnoreCase("right")) {
+      randomFaceNum = random(7);
+      digitalWrite(RIGHT_LED_OUTPUT_PIN, HIGH);
+      delay(200);
+      digitalWrite(RIGHT_LED_OUTPUT_PIN, LOW);
+      delay(200);
+      digitalWrite(RIGHT_LED_OUTPUT_PIN, HIGH);
+      delay(200);
+      digitalWrite(RIGHT_LED_OUTPUT_PIN, LOW);
       delay(200);
     }
 
@@ -552,13 +567,12 @@ void loop() {
       uint16_t yText = _display.height() / 2 - textHeight / 2;
       uint16_t xText = _display.width() / 2 - textWidth / 2;
       _display.setCursor(xText, yText);
-//      _display.print(rcvdSerialData);
     } else {
       _display.setTextSize(1);
       _display.setCursor(0, 0);
-//      _display.print(rcvdSerialData);
     }
 
+    // display face
     switch (randomFaceNum) {
       case 0:
         _curFaceState = "neutral";
