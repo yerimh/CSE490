@@ -6,9 +6,50 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  background-color: #DEEFB7;
+}
+
+h3, h2, h1, p, ul, button {
+  font-family: 'Signika Negative', sans-serif;
+  color: #414288;
+}
+
+button {
+  padding: 10px;
+  border-radius: 15px;
 }
 
 canvas {
   position: absolute;
+  top: 348px;
   z-index: 1;
+}
+
+ul {
+  border: 50px;
+}
+
+#heading {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  margin: 20px;
+}
+
+#expression {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #98DFAF;
+  padding: 20px;
+}
+
+#scores {
+  display: flex;
+  justify-content: space-between;
+}
+
+#tips-tricks {
+  margin: 30px;
 }

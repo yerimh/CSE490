@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="styles.css">
-    <title>Face Expression Recognition</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Signika+Negative:wght@600&display=swap" rel="stylesheet">
+    <title>Face Battle</title>
     <script src="https://cdn.jsdelivr.net/gh/makeabilitylab/p5js/_libraries/serial.js"></script>
     <script defer src="node_modules/face-api.js/dist/face-api.min.js"></script>
     <script defer src="script.js"></script>
@@ -14,23 +16,34 @@
 
 <body>
   <div id="heading">
-    <h1>Expression Reponse</h1>
+    <h1>1 VS 1 FACE BATTLE</h1>
     <button id="connect-button" onclick="onButtonConnectToSerialDevice()">
       Connect via Serial Port
     </button>
-    <div id="text-interface">
-      <h3>Display text:</h3>
-      <p id="output-text"></p>
 
-      <h3>Received from Arduino:</h3>
-      <p id="received-text"></p>
+    <h1 id="time"></h1>
+    <div id="scores">
+      <h1 id="left-score"></h1>
+      <h1 id="right-score"></h1>
     </div>
   </div>
 
-  <br />
+  <div id="expression">
+    <video id="video" width="514" height="400" autoplay muted></video>
+  </div>
 
-  <h2 id="facial-expression"></h2>
-  <video id="video" width="720" height="560" autoplay muted></video>
+  <div id="tips-tricks">
+    <h3>Tips and tricks:</h3>
+    <ul>
+      <li>NEUTRAL: Tighten your lips! Especially if you have thick lips</li>
+      <li>HAPPY: Wide toothy smile!</li>
+      <li>SAD: Turn the corners of your lips downwards and tilt your head up</li>
+      <li>SURPRISED: Easy. Just open your mouth</li>
+      <li>FEARFUL: Widen your eyes and cup your cheeks with your fingers</li>
+      <li>ANGRY: Scrunch up your nose, grit your teeth, and tilt your head down</li>
+      <li>DISGUSTED: Squint your eyes and pull up one corner of your mouth</li>
+    </ul>
+  </div>
 
 </body>
 </html>
