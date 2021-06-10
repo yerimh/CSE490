@@ -1,3 +1,8 @@
+// Credit for face api code goes to Aniket Eknath Kudale
+// https://www.opensourceforu.com/2020/06/building-a-facial-expression-recognition-app-using-tensorflow-js/
+
+// Credit for serial connection to Arduino goes to Jon Froehlich
+
 const video = document.getElementById('video')
 
 const serial = new Serial();
